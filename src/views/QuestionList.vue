@@ -72,14 +72,6 @@ computed:{
   pagenum(){
     return Math.ceil(this.maxPages/this.buttonsPerPage)
   },
-  shuszu(){
-    return [this.state.images[0].accept,this.state.images[1].accept, this.state.images[2].accept
-                    ,this.state.images[3].accept,this.state.images[4].accept
-                    , this.state.images[5].accept,this.state.images[6].accept
-                    ,this.state.images[7].accept, this.state.images[8].accept
-                    ,this.state.images[9].accept
-]
-  },
   ...mapState(["user", "isLogin","isSign"])
 },methods:{
 	showButtons(page) {
@@ -134,6 +126,15 @@ computed:{
     drawLine2(){
         // 基于准备好的dom，初始化echarts实例
         let myChart = this.$echarts.init(document.getElementById('myChart1'))
+        //console.log("数量",this.state.images.length)
+        let arrid=[]
+        let arrac=[]
+        for(var i=0;i<this.state.images.length;i++){
+            arrid.push(this.state.images[i].id)
+            arrac.push(this.state.images[i].accept)
+        }
+        //console.log("arrid",arrid)
+        
         // 绘制图表
         myChart.setOption({
           title: {
@@ -141,24 +142,14 @@ computed:{
           },
           xAxis: {
             type: 'category',
-            data: [this.state.images[0].id,this.state.images[1].id, this.state.images[2].id,
-            this.state.images[3].id,this.state.images[4].id, this.state.images[5].id,
-            this.state.images[6].id,this.state.images[7].id, this.state.images[8].id,
-            this.state.images[9].id
-          
-          ]
+            data: arrid
           },
           yAxis: {
             type: 'value'
           },
           series: [
             {
-              data: [this.state.images[0].accept,this.state.images[1].accept, this.state.images[2].accept
-                    ,this.state.images[3].accept,this.state.images[4].accept
-                    , this.state.images[5].accept,this.state.images[6].accept
-                    ,this.state.images[7].accept, this.state.images[8].accept
-                    ,this.state.images[9].accept
-],
+              data: arrac,
               type: 'line'
             }
           ]
