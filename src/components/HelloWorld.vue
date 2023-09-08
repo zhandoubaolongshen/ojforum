@@ -39,12 +39,6 @@ export default {
       let res = getProblems();
       console.log(res);
       console.log("999")
-    },
-    kk(){
-      
-      let res = getMusicList()
-      console.log(res);
-      console.log("kk")
     }
   }
 } 
