@@ -35,6 +35,11 @@
     },
     methods: {
       addOption() {
+        if(!this.$store.state.isLogin){
+          //console.log("未登录")
+          alert("登录后才可以使用此功能！")
+          return 0;
+        }
         console.log(this.queobj,this.title,this.text)
         let res=postPublishForum(this.queobj,this.title,this.text,store.state.user.name)
         console.log(res)

@@ -49,6 +49,11 @@
     },
     methods: {
       addOption() {
+        if(!this.$store.state.isLogin){
+          //console.log("未登录")
+          alert("登录后才可以使用此功能！")
+          return 0;
+        }
         let res=postProblem(this.title,this.selectedLevel,
         this.text,this.input,this.output)
         console.log(res)

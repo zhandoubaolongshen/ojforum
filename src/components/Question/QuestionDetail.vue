@@ -57,7 +57,13 @@
     },
     methods:{
       runCode(){
-        console.log(this.text,this.queobj.id)
+        //console.log("登录状态",this.$store.state.isLogin)
+        if(!this.$store.state.isLogin){
+          //console.log("未登录")
+          alert("登录后才可以提交代码！")
+          return 0;
+        }
+        //console.log(this.text,this.queobj.id)
         var res22=postcode(this.text,this.queobj.id)
         console.log("发送",)
         res22.then(response => {

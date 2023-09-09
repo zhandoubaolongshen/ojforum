@@ -165,7 +165,7 @@ mounted() {
     setTimeout(() => {  
       this.drawLine1();
       this.drawLine2()
-    }, 500);
+    }, 10);
   },
   setup(props) {
     let state = reactive({

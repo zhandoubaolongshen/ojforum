@@ -170,6 +170,11 @@ import store from '@/store/index';
   },
   methods:{
     reply(){
+      if(!this.$store.state.isLogin){
+          //console.log("未登录")
+          alert("登录后才可以使用此功能！")
+          return 0;
+        }
       this.show=false
       console.log(this.text,this.forumid)
       let res1=postcomment(this.text,this.forumid,store.state.user.name)
