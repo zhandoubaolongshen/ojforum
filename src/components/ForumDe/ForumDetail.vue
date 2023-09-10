@@ -171,36 +171,27 @@ import store from '@/store/index';
   methods:{
     reply(){
       if(!this.$store.state.isLogin){
-          //console.log("未登录")
           alert("登录后才可以使用此功能！")
           return 0;
         }
       this.show=false
-      console.log(this.text,this.forumid)
       let res1=postcomment(this.text,this.forumid,store.state.user.name)
-        console.log(res1)
-
-        
-
-        res1.then(response => {
-        const message = response.data.message;
-        if (message === '操作成功') {
-            // 弹出添加成功的弹窗
-            alert('添加成功');
-        }
-        }).catch(error => {
-        console.log(error);
-        });
-      
-        this.text=''
-        
+      res1.then(response => {
+      const message = response.data.message;
+      if (message === '操作成功') {
+          alert('添加成功');
+      }
+      }).catch(error => {
+      console.log(error);
+      });
+      this.text=''
+      this.commentshow()
     },
     cut(){
       this.posts=this.posts.slice().reverse()
-    }
-  },
-  updated(){
-    let res=getcomment(this.forumid)
+    },
+    commentshow(){
+      let res=getcomment(this.forumid)
         console.log(res)
         res.then(response => {
         const data = response.data.data;
@@ -214,7 +205,29 @@ import store from '@/store/index';
         }).catch(error => {
         console.log(error);
         });
+    }
   },
+  // updated(){
+  //   let res=getcomment(this.forumid)
+  //       console.log(res)
+  //       res.then(response => {
+  //       const data = response.data.data;
+  //       console.log("-----",data.length)
+  //       if (data.length==0){
+  //           console.log("********")
+  //           this.tishi=true
+  //       }
+  //       this.posts=data
+  //       console.log(data)
+  //       }).catch(error => {
+  //       console.log(error);
+  //       });
+  // },
+//出现一直刷新的问题，如果是请求方法里面
+//1.操作了data()里面的值
+//2.给data()里面的值赋了新值
+//因为页面已经挂载完成了,如果操作data()的值,页面又会重新走更新周期里的方法,
+//就会不停的发送请求,把操作data()的代码注释掉就不会一直发送请求了
     mounted() {
     this.forumid = this.$route.query.ForumId
     this.forumauthor.author= this.$route.query.Forumuid
@@ -223,21 +236,8 @@ import store from '@/store/index';
     this.forumauthor.comments= this.$route.query.Forumcommentnum
     
     console.log("**从其它组件传递过来的参数：",this.forumauthor);
-
-    let res=getcomment(this.forumid)
-        console.log(res)
-        res.then(response => {
-        const data = response.data.data;
-        console.log("-----",data.length)
-        if (data.length==0){
-            console.log("********")
-            this.tishi=true
-        }
-        this.posts=data
-        console.log(data)
-        }).catch(error => {
-        console.log(error);
-        });
+    this.commentshow()
+    
   }
 }
   </script>

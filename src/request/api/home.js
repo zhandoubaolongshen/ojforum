@@ -71,10 +71,17 @@ export function getQuestionforum(pid){
     })
 }
 //获得所有的帖子
-export function getAllforum(pid){
+export function getAllforum(){
     return service({
         method:"GET",
         url:`/forums/?pageNum=1&pageSize=999`
+    })
+}
+//获得某个用户的帖子
+export function getownforum(uid){
+    return service({
+        method:"GET",
+        url:`/forums/aboutProblem?uid=${uid}`
     })
 }
 //获得某个帖子下所有评论

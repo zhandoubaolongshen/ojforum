@@ -2,6 +2,8 @@
 	<div>
 	  <h1 class="title">论坛首页</h1>
     <p v-show="!$store.state.isLogin" >登录后可查看帖子</p>
+    <button v-show="buttonshow" @click="ownforum()">查看我的帖子</button>
+    <button v-show="!buttonshow" @click="allforum()">查看所有帖子</button>
 	  <div v-for="post in posts" 
 	   :key="post.id" 
 	   @click="$router.push({ path: '/forumDetail',
@@ -32,13 +34,75 @@
 		</div>
 	  </div>
 	</div>
+  <div v-show="tishi" style="margin-top: 200px;margin-left: 50px;">
+        <h2>目前还没发布过帖子,在题目中的讨论区发布讨论吧！</h2>
+      </div>
   </template>
   
+  <script>
+  import {
+ getProblems,getAllforum,getownforum
+} from "@/request/api/home.js"
+import { all } from 'axios'
+  export default {
+  data() {
+    return {
+      posts: [
+       
+      ],
+      buttonshow:false,
+      tishi:false
+    }
+  },
+  methods:{
+    ownforum(){
+      let res=getownforum(this.$store.state.user.name)
+        console.log("获得个人帖子")
+        res.then(response => {
+        const data = response.data.data;
+        if (data.length==0){
+            this.tishi=true
+        }
+        this.posts=data
+        console.log(data)
+        }).catch(error => {
+        console.log(error);
+        });
+        this.buttonshow=!this.buttonshow
+    },
+    allforum(){
+      let res=getAllforum()
+        console.log(res)
+        res.then(response => {
+        const data = response.data.data;
+        if (data.length==0){
+            this.tishi=true
+        }
+        this.posts=data
+        console.log(data)
+        }).catch(error => {
+        console.log(error);
+        });
+        this.buttonshow=!this.buttonshow
+    }
+  },
+  mounted() {
+    console.log(this.$store.state)
+    this.allforum()
+  }
+}
+  </script>
+
   <style lang="less" scoped>
+  button{
+    margin-left: 15%;
+    margin-bottom: 20px;
+  }
   .title {
-	font-size: 24px;
+	font-size: 3rem;
 	text-align: center;
 	margin-bottom: 20px;
+  margin-top:2%;
   }
   .icon{
       width: 2rem;
@@ -82,34 +146,4 @@
   }
   </style>
   
-  <script>
-  import {
- getProblems,getAllforum
-} from "@/request/api/home.js"
-  export default {
-  data() {
-    return {
-      posts: [
-       
-      ],
-    }
-  },
-  mounted() {
-    console.log(this.$store.state)
-    let res=getAllforum()
-        console.log(res)
-        res.then(response => {
-        const data = response.data.data;
-        console.log("-----",data.length)
-        if (data.length==0){
-            console.log("********")
-            this.tishi=true
-        }
-        this.posts=data
-        console.log(data)
-        }).catch(error => {
-        console.log(error);
-        });
-  }
-}
-  </script>
+ 
