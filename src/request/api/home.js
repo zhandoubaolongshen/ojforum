@@ -84,6 +84,13 @@ export function getownforum(uid){
         url:`/forums/aboutProblem?uid=${uid}`
     })
 }
+//删除某个用户的帖子
+export function deleteforum(fid,uid){
+    return service({
+        method:"DELETE",
+        url:`/forums/delete?fid=${fid}&uid=${uid}`
+    })
+}
 //获得某个帖子下所有评论
 export function getcomment(id){
     return service({
@@ -111,7 +118,7 @@ export function postcode(code,pid,uid){
         data:{
             "code":code,
             "pid":pid,
-            "uid":"1"
+            "uid":"共享心跳"
         }
     })
 }

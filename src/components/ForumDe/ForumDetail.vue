@@ -180,12 +180,13 @@ import store from '@/store/index';
       const message = response.data.message;
       if (message === '操作成功') {
           alert('添加成功');
+          this.commentshow()
       }
       }).catch(error => {
       console.log(error);
       });
       this.text=''
-      this.commentshow()
+      
     },
     cut(){
       this.posts=this.posts.slice().reverse()

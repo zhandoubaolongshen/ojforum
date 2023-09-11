@@ -16,7 +16,11 @@
 	})"  
 	   class="post">
 		<div class="post-content">
-			<div class="post-title">{{ post.title }}</div>
+      <div class="hang">
+        <div class="post-title">{{ post.title }}</div>
+        <button v-show="!buttonshow" @click.stop="delforum(post.id)">删除</button>
+      </div>
+			
 		  <div class="post-author">作者：{{ post.uid }}</div>
 		  <div class="post-text">{{ post.description }}</div>
 		  <div class="post-info">
@@ -41,7 +45,7 @@
   
   <script>
   import {
- getProblems,getAllforum,getownforum
+ getProblems,getAllforum,getownforum,deleteforum
 } from "@/request/api/home.js"
 import { all } from 'axios'
   export default {
@@ -68,7 +72,7 @@ import { all } from 'axios'
         }).catch(error => {
         console.log(error);
         });
-        this.buttonshow=!this.buttonshow
+        this.buttonshow=false
     },
     allforum(){
       let res=getAllforum()
@@ -83,7 +87,19 @@ import { all } from 'axios'
         }).catch(error => {
         console.log(error);
         });
-        this.buttonshow=!this.buttonshow
+        this.buttonshow=true
+    },
+    delforum(fid){
+      console.log("删除")
+      deleteforum(fid,this.$store.state.user.name).then(()=>{
+        this.ownforum()
+      })
+
+      //deleteforum(fid)
+      // setTimeout(()=>{
+      //   this.ownforum()
+      // }, 1000 )
+      
     }
   },
   mounted() {
@@ -97,6 +113,10 @@ import { all } from 'axios'
   button{
     margin-left: 15%;
     margin-bottom: 20px;
+  }
+  .hang{
+    display: flex;
+    justify-content: space-between;
   }
   .title {
 	font-size: 3rem;
