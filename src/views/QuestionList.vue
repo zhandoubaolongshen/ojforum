@@ -7,6 +7,14 @@
     query: {  QuestionId: JSON.stringify(state.randomquestion) }
     })">每日一题</button>
       <button  @click="$router.push({ path: '/AddQuestion'})">添加题目</button>
+      题目难度
+      <select v-model="state.selectedOption" @change="changegrade()">
+        <option   selected>全部</option>
+        <option >简单</option>
+        <option >中等</option>
+        <option >困难</option>
+      </select>
+      
     </div>
     <table>
         <thead>
@@ -23,7 +31,11 @@
           query: {  QuestionId: JSON.stringify(image) } })">
             <td>{{ image.id }}</td>
             <td>{{ image.title }}</td>
-            <td>{{ image.grade }}</td>
+            <td :class="{
+            'grade-a': image.grade === '简单', 
+            'grade-b': image.grade === '中等', 
+            'grade-c': image.grade === '困难'}">
+              {{ image.grade }}</td>
             <td>{{ image.accept }}</td>
           </tr>
         </tbody>
@@ -42,7 +54,7 @@
     </div>
 </template>
 <script>
-
+import { toRaw } from '@vue/reactivity'
 import { mapState } from "vuex";
 import { reactive, onMounted,ref, computed,nextTick} from "vue";
 import {
@@ -60,14 +72,14 @@ props:{
   butsum:110
 },
 updated() {
-  setTimeout(() => {  
-      
+  setTimeout(() => {       
       this.drawLine2()
     }, 500);
+    this.showButtons(this.currentPage)
 },
 computed:{
 	maxPages(){
-		return Math.ceil(this.state.resnum / this.buttonsPerPage)/2
+		return Math.ceil(this.state.nowlist.length/ this.buttonsPerPage)/2
 	},
   pagenum(){
     return Math.ceil(this.maxPages/this.buttonsPerPage)
@@ -108,6 +120,8 @@ computed:{
         // 基于准备好的dom，初始化echarts实例
         let myChart = this.$echarts.init(document.getElementById('myChart'))
         // 绘制图表
+        
+        //console.log("绘制饼图时",this.state.easy.length,this.state.images.length,this.state.easynum.length)
         myChart.setOption({
           title: {
             text: '                         体型难度占比'
@@ -116,9 +130,9 @@ computed:{
                 name: "数量",
                 type: 'pie',
                 //roseType: 'area',
-                data: [{value:this.state.easy,name:'简单'},
-                {value:this.state.medium,name:'中等'}, 
-                {value:this.state.hard,name:'困难'}]
+                data: [{value:this.state.easy.length,name:'简单',itemStyle: { color: 'skyblue' }},
+                {value:this.state.medium.length,name:'中等',itemStyle: { color: 'Gold' }}, 
+                {value:this.state.hard.length,name:'困难',itemStyle: { color: 'LightCoral' }}]
                 
             }]
         });
@@ -129,6 +143,8 @@ computed:{
         //console.log("数量",this.state.images.length)
         let arrid=[]
         let arrac=[]
+        //console.log("绘制折线图时",this.state.easy.length,this.state.images.length)
+        
         for(var i=0;i<this.state.images.length;i++){
             arrid.push(this.state.images[i].id)
             arrac.push(this.state.images[i].accept)
@@ -160,59 +176,77 @@ mounted() {
     // 在组件挂载后执行的操作
     this.showButtons(this.currentPage)
     console.log('组件已挂载！');
-    
-    
     setTimeout(() => {  
       this.drawLine1();
       this.drawLine2()
-    }, 10);
+    }, 1000);
+    
   },
   setup(props) {
     let state = reactive({
-      images: [],
-      randomquestion:{},
-      resnum:80,
-      easy:0,
-      hard:0,
-      medium:0
+      images: [],//每一页展示的
+      randomquestion:{},//每日一题信息
+      resnum:30,//总题目数量，用来划分页面
+      easy:[],
+      hard:[],
+      medium:[],
+      all:[],
+      nowlist:[],//切换后的题目信息
+      selectedOption:'全部',
     });
     onMounted(async () => {
       let res = await getProblems(1);//初始化页面
-      let resnum = await getallProblems();//初始化页面
+      let resnum = await getallProblems();//获得所有题目信息
       state.images=res.data.data
-      //console.log("state.images",state.images)
-      //#region
-      /*折叠注释*/ 
-      //#endregion
+      state.all=resnum.data.data
+      state.nowlist=state.all
+      console.log("**当前页面题目信息**",state.images)
       state.resnum=resnum.data.data.length
-      state.randomquestion=resnum.data.data[Math.floor(Math.random() * state.resnum)]
-      console.log("state.num",res.data.data)
+      state.randomquestion=resnum.data.data[Math.floor(Math.random() * state.resnum)]//随机一题作为每日一题
+      //console.log("**总题目信息**",resnum.data.data)
       for(var i=0;i<resnum.data.data.length;i++){
         if(resnum.data.data[i].grade=='简单'){
-          state.easy++       
+          state.easy.push(resnum.data.data[i])      
         }
         else if(resnum.data.data[i].grade=='中等'){
-          state.medium++
+          state.medium.push(resnum.data.data[i])   
         }
         else if(resnum.data.data[i].grade=='困难'){
-          state.hard++         
-        }else{
-          console.log("其他",resnum.data.data[i].grade)
+          state.hard.push(resnum.data.data[i])          
         }
       }
-      console.log(state.easy,state.medium,state.hard)
+      //console.log("三类题目",state.easy,state.medium,state.hard)
+      console.log("三类题目",state.easy.length,state.medium.length,state.hard.length)
     });
-    const change=async (id) =>{   //切换页面
-      let res =await getProblems(id);    
-      state.images=res.data.data     
-      console.log("更新state.images",state.images)
+    const change=async (id) =>{   //切换页面   
+
+      // let res =await getProblems(id);    //原先是分页向后端拿数据，现在在前端做难度筛选处理
+      // state.images=res.data.data     
+      // console.log("更新state.images",state.images)
+
+      state.images=state.nowlist.slice(10*(id-1),(10*id))
+    };
+    const changegrade=() =>{   //切换难度
+      if (state.selectedOption === '全部') {
+        // 执行全部选项的逻辑
+        state.nowlist=state.all
+      } else if (state.selectedOption === '简单') {
+        // 执行简单选项的逻辑
+        state.nowlist=state.easy
+      } else if (state.selectedOption === '中等') {
+        // 执行中等选项的逻辑
+        state.nowlist=state.medium
+      }else if (state.selectedOption === '困难') {
+        // 执行困难选项的逻辑
+        state.nowlist=state.hard
+      }
+      state.images=state.nowlist.slice(0,10)
+      state.resnum=state.nowlist.length
       
     };
     
-    return { state,change};
+    return { state,change,changegrade};
   },
-
-
 
 };
 </script>
@@ -229,6 +263,17 @@ mounted() {
 	}
 </style>
 <style lang="less" scoped>
+.grade-a {
+  background-color: skyblue;
+}
+
+.grade-b {
+  background-color: gold;
+}
+
+.grade-c {
+  background-color: lightcoral;
+}
       #pagination-container{
         margin-left: 28%;
         
