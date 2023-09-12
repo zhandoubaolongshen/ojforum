@@ -19,10 +19,10 @@
     <table>
         <thead>
           <tr>
-            <th>序号</th>
-            <th>题目</th>
-            <th>难度</th>
-            <th>通过人数</th>
+            <th style="width: 60px;">序号</th>
+            <th style="width: 300px;">题目</th>
+            <th style="width: 60px;">难度</th>
+            <th style="width: 90px;">通过人数</th>
           </tr>
         </thead>
         <tbody>         
@@ -40,17 +40,17 @@
           </tr>
         </tbody>
     </table>
-    
+    <div style="margin-left: 41%;">
+      <span>---{{currentPage}}/{{pagenum}}---</span>
+    </div>
     <div id="pagination-container">
-			
-			<div id="button-list" class="bbb"  ref="myDiv">
-        
-      </div>
 			<button  class="button" @click="previousPage()">&lt; 上一页</button>
-			<span id="page-display">---{{currentPage}}/{{ pagenum}} ---</span>
-      <button  class="button" @click="nextPage()">下一页 &gt;</button>
+			<div id="button-list" class="bbb"  ref="myDiv"></div>
+			<button  class="button" @click="nextPage()">下一页 &gt;</button>
+			
+      
 		</div>
-
+    
     </div>
 </template>
 <script>
@@ -79,34 +79,37 @@ updated() {
 },
 computed:{
 	maxPages(){
-		return Math.ceil(this.state.nowlist.length/ this.buttonsPerPage)/2
+		return Math.ceil(this.state.nowlist.length/ 10)  //页数，10题一页
 	},
-  pagenum(){
+  pagenum(){    //组数，5页为一组
     return Math.ceil(this.maxPages/this.buttonsPerPage)
   },
   ...mapState(["user", "isLogin","isSign"])
 },methods:{
-	showButtons(page) {
+	showButtons(page) {     
       const startIndex = (page - 1) * this.buttonsPerPage;
       const endIndex = Math.min(startIndex + this.buttonsPerPage, this.maxPages);
-
       this.$refs.myDiv.innerHTML = "";
       for (let i = startIndex; i < endIndex; i++) {
         const button = document.createElement("button");
         button.className = "forumbutton";
-		//button.style.color="red";
         button.textContent = i+1;
         button.addEventListener('click',()=>{
           this.change(i+1)
         })
         this.$refs.myDiv.appendChild(button);
       }
+      if(this.currentPage>this.pagenum){
+        //console.log("问题",this.currentPage,this.pagenum)
+        this.currentPage=1
+      }
+
     },
 	nextPage(){
     if(this.currentPage<this.pagenum){
       this.currentPage++
     }
-		
+		console.log("88888888",this.currentPage,this.pagenum)
 		this.showButtons(this.currentPage)
 	},
 	previousPage(){
@@ -242,6 +245,7 @@ mounted() {
       }
       state.images=state.nowlist.slice(0,10)
       state.resnum=state.nowlist.length
+      //this.currentPage=1
       
     };
     
@@ -264,19 +268,19 @@ mounted() {
 </style>
 <style lang="less" scoped>
 .grade-a {
-  background-color: skyblue;
+  color: skyblue;
 }
-
 .grade-b {
-  background-color: gold;
+  color: rgb(227, 193, 1);
 }
-
 .grade-c {
-  background-color: lightcoral;
+  color: lightcoral;
 }
       #pagination-container{
-        margin-left: 28%;
-        
+        margin-left: 25%;
+        width: 38%;
+        display: flex;
+        justify-content: space-around;
       }
       table {
         border-collapse: collapse;
@@ -302,7 +306,7 @@ mounted() {
       }
     .button {
           cursor: pointer;
-          padding: 20px;
+          padding: 10px;
           background-color: #ede2e2;
           border: none;
           outline: none;
@@ -312,7 +316,7 @@ mounted() {
         }
     .top{
       margin-left: 24%;
-      margin-top: 100px;
+      margin-top: 10px;
       button{
         margin: 10px;
       }

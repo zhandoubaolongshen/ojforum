@@ -34,7 +34,8 @@
       v-model="text"
       id="editor" class="form-control mb-3" rows="10"></textarea>
       <button class="btn btn-primary" @click="runCode()">运行代码</button>
-      <h2 >运行结果:{{ result }}</h2>
+      <h2 >运行结果:{{ result.message }}</h2>
+      <h2>运行状态:{{ result.status}}</h2>
       
     </div>
 
@@ -57,20 +58,28 @@
     },
     methods:{
       runCode(){
-        //console.log("登录状态",this.$store.state.isLogin)
         if(!this.$store.state.isLogin){
           //console.log("未登录")
           alert("登录后才可以提交代码！")
           return 0;
         }
-        //console.log(this.text,this.queobj.id)
         var res22=postcode(this.text,this.queobj.id)
         console.log("发送",)
         res22.then(response => {
-        const message = response.data.message;
+        let message = response.data.data.status;
         this.result=response.data.data
-        console.log(message,response.data.data)
-        console.log(res22)
+        console.log("返回结果",response.data.data)
+        if(this.result.message=='Accept'){
+          console.log("成功")
+          this.result.status=message.split("\n")[0]+"---"+message.split("\n")[1]
+        }else if(this.result.message=='Wrong answer'){
+          console.log("失败")
+          this.result.status="答案错误"
+        }else{
+          this.result.status="运行报错"
+        }
+        
+        console.log("状态",this.result.status)
         }).catch(error => {
         console.log(error);
         });
