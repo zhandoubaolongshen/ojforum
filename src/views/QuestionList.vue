@@ -14,7 +14,8 @@
         <option >中等</option>
         <option >困难</option>
       </select>
-      
+      <br>
+      <input type="text" placeholder="搜索题目">
     </div>
     <table>
         <thead>
@@ -74,7 +75,7 @@ props:{
 updated() {
   setTimeout(() => {       
       this.drawLine2()
-    }, 500);
+    }, 200);
     this.showButtons(this.currentPage)
 },
 computed:{
@@ -121,11 +122,11 @@ computed:{
 	},
   drawLine1(){
         // 基于准备好的dom，初始化echarts实例
-        let myChart = this.$echarts.init(document.getElementById('myChart'))
+        this.chart2 = this.$echarts.init(document.getElementById('myChart'))
         // 绘制图表
         
         //console.log("绘制饼图时",this.state.easy.length,this.state.images.length,this.state.easynum.length)
-        myChart.setOption({
+        this.chart2.setOption({
           title: {
             text: '                         体型难度占比'
           }, 
@@ -142,7 +143,7 @@ computed:{
     },
     drawLine2(){
         // 基于准备好的dom，初始化echarts实例
-        let myChart = this.$echarts.init(document.getElementById('myChart1'))
+        this.chart1  = this.$echarts.init(document.getElementById('myChart1'))
         //console.log("数量",this.state.images.length)
         let arrid=[]
         let arrac=[]
@@ -155,7 +156,7 @@ computed:{
         //console.log("arrid",arrid)
         
         // 绘制图表
-        myChart.setOption({
+        this.chart1.setOption({
           title: {
             text: '                        各题通过人数'
           },
@@ -182,9 +183,19 @@ mounted() {
     setTimeout(() => {  
       this.drawLine1();
       this.drawLine2()
-    }, 1000);
+    }, 150);
     
   },
+  beforeDestroy() {
+  setTimeout(() => {
+    if (this.chart1) {
+      this.chart1.dispose();
+    }
+    if (this.chart2) {
+      this.chart2.dispose();
+    }
+  }, 200);
+},
   setup(props) {
     let state = reactive({
       images: [],//每一页展示的

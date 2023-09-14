@@ -29,7 +29,8 @@ const routes = [
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "QuestionList" */ '../views/QuestionList.vue')
+    component: () => import(/* webpackChunkName: "QuestionList" */ '../views/QuestionList.vue'),
+    
   },
   {
     path: '/questiondetail',
@@ -92,11 +93,14 @@ const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes
 })
-router.beforeEach((to,from)=>{
-  if(to.path=='/login'){
-    store.state.isFooterMusic=false
-  }else{
-    store.state.isFooterMusic=true
-  }
-})
+router.beforeEach((to, from, next) => {
+  setTimeout(() => {
+    if (to.path == '/login') {
+      store.state.isFooterMusic = false;
+    } else {
+      store.state.isFooterMusic = true;
+    }
+    next();
+  }, 280);
+});
 export default router
