@@ -3,16 +3,16 @@
 
 
     <!-- 题目部分 -->
-    <div class="container-md mt-5">
-      <h1 class="mb-4">{{queobj.id}}.{{queobj.title}}</h1>
-      <button @click="$router.push({ path: '/publishforum',
+    <div class="container-md mt-3">
+      <h1 class="mb-3">{{queobj.id}}.{{queobj.title}}</h1>
+      <button class="btn btn-outline-primary" @click="$router.push({ path: '/publishforum',
     query: {  QuestionId1: JSON.stringify(queobj.id)}
     })"> 发表讨论</button>
 
-<button @click="$router.push({ path: '/questionforum',
-    query: {  QuestionId1: JSON.stringify(queobj.id)}
-    })"> 讨论区</button>
-
+      <button class="btn btn-outline-secondary" @click="$router.push({ path: '/questionforum',
+          query: {  QuestionId1: JSON.stringify(queobj.id)}
+          })"> 讨论区</button>
+      <br>
       <p>{{ queobj.description }}</p>
       <p><strong>示例：</strong></p>
       <pre>输入:nums = [2,7,11,15], target = 9
@@ -27,7 +27,7 @@
     </div>
 
     <!-- 代码部分 -->
-    <div class="container-md mt-5">
+    <div class="container-md mt-2">
       <h2>编写解题代码</h2>
       <p>请在下方输入 C++ 代码：</p>
       <textarea 

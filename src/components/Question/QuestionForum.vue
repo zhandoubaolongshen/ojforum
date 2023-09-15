@@ -1,9 +1,10 @@
 <template>
 	<div>
-	  <h1 class="title">题目标题</h1>
-      <button @click="$router.push({ path: '/publishforum',
+	  <h1 class="title">讨论区</h1>
+      <button class="btn btn-primary" style="margin-left: 8%;" @click="$router.push({ path: '/publishforum',
     query: {  QuestionId1: JSON.stringify(queobj)}
     })"> 发表讨论</button>
+    <br><br>
 	  <div v-for="post in posts" 
 	   :key="post.id" 
 	   @click="$router.push({ path: '/forumDetail',
@@ -41,8 +42,9 @@
   
   <style lang="less" scoped>
   .title {
-	font-size: 24px;
+	font-size: 32px;
 	text-align: center;
+  margin-top: 20px;
 	margin-bottom: 20px;
   }
   .icon{

@@ -3,12 +3,12 @@
     <div id="myChart" :style="{width: '390px', height: '300px'}"></div>
     <div id="myChart1" :style="{width: '390px', height: '300px'}"></div>
     <div class="top">
-      <button  @click="$router.push({ path: '/QuestionDetail',
+      <button class="btn btn-primary"  @click="$router.push({ path: '/QuestionDetail',
     query: {  QuestionId: JSON.stringify(state.randomquestion) }
     })">每日一题</button>
-      <button  @click="$router.push({ path: '/AddQuestion'})">添加题目</button>
+      <button class="btn btn-info" @click="$router.push({ path: '/AddQuestion'})">添加题目</button>
       题目难度
-      <select v-model="state.selectedOption" @change="changegrade()">
+      <select  v-model="state.selectedOption" @change="changegrade()">
         <option   selected>全部</option>
         <option >简单</option>
         <option >中等</option>
@@ -21,7 +21,7 @@
         <option >20</option>
       </select>
       &nbsp;
-      <input v-model="inputValue" type="text" placeholder="搜索题目">
+      <input  v-model="inputValue" type="text" placeholder="搜索题目">
     </div>
     <table>
         <thead>
@@ -48,7 +48,7 @@
         </tbody>
     </table>
     <div class="footer-container">
-      <div style="margin-left: 41%;">
+      <div style="margin-left: 42%;">
         <span>---{{currentPage}}/{{pagenum}}---</span>
       </div>
       <div id="pagination-container">
@@ -311,7 +311,7 @@ mounted() {
   .forumbutton{
 		cursor: pointer;
           padding: 20px;
-          height: 3.5rem;
+          height: 3rem;
           background-color: #b3b3b3;
           border: none;
           outline: none;
@@ -331,7 +331,7 @@ mounted() {
   color: lightcoral;
 }
       #pagination-container{
-        margin-left: 25%;
+        margin-left: 26%;
         width: 38%;
         display: flex;
         justify-content: space-around;
@@ -365,7 +365,7 @@ mounted() {
           background-color: #ede2e2;
           border: none;
           outline: none;
-          height: 3.5rem;
+          height: 3.0rem;
           border-radius: 5px;
           margin-right: 5px;
           margin-top: 10px;

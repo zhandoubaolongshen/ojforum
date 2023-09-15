@@ -7,7 +7,7 @@
       <button style="background-color: red;float: right;" @click="LoginOut">退出登录</button>
       <div class="container">
         <h2>基本资料</h2>
-        <p> 是否登陆{{ isLogin }}，是否签到{{ isSign }}  </p>
+        
 
       
         <div class="info-card">

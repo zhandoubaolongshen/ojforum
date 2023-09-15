@@ -2,8 +2,8 @@
 	<div>
 	  <h1 class="title">论坛首页</h1>
     <p v-show="!$store.state.isLogin" >登录后可查看帖子</p>
-    <button v-show="buttonshow" @click="ownforum()">查看我的帖子</button>
-    <button v-show="!buttonshow" @click="allforum()">查看所有帖子</button>
+    <button class="btn btn-primary" v-show="buttonshow" @click="ownforum()">查看我的帖子</button>
+    <button class="btn btn-primary" v-show="!buttonshow" @click="allforum()">查看所有帖子</button>
 	  <div v-for="post in posts" 
 	   :key="post.id" 
 	   @click="$router.push({ path: '/forumDetail',
@@ -18,7 +18,7 @@
 		<div class="post-content">
       <div class="hang">
         <div class="post-title">{{ post.title }}</div>
-        <button v-show="!buttonshow" @click.stop="delforum(post.id)">删除</button>
+        <button class="btn btn-danger" v-show="!buttonshow" @click.stop="delforum(post.id)">删除</button>
       </div>
 			
 		  <div class="post-author">作者：{{ post.uid }}</div>
