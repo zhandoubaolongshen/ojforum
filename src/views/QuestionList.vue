@@ -15,7 +15,7 @@
         <option >困难</option>
       </select>
       <br>
-      <input type="text" placeholder="搜索题目">
+      <input v-model="inputValue" type="text" placeholder="搜索题目">
     </div>
     <table>
         <thead>
@@ -48,10 +48,7 @@
 			<button  class="button" @click="previousPage()">&lt; 上一页</button>
 			<div id="button-list" class="bbb"  ref="myDiv"></div>
 			<button  class="button" @click="nextPage()">下一页 &gt;</button>
-			
-      
-		</div>
-    
+		</div>  
     </div>
 </template>
 <script>
@@ -67,6 +64,8 @@ export default {
   return {
     buttonsPerPage: 5,
     currentPage: 1,
+    inputValue:'',
+    timer:'',
   }
 },
 props:{
@@ -101,31 +100,25 @@ computed:{
         this.$refs.myDiv.appendChild(button);
       }
       if(this.currentPage>this.pagenum){
-        //console.log("问题",this.currentPage,this.pagenum)
         this.currentPage=1
       }
-
     },
 	nextPage(){
     if(this.currentPage<this.pagenum){
       this.currentPage++
     }
-		console.log("88888888",this.currentPage,this.pagenum)
 		this.showButtons(this.currentPage)
 	},
 	previousPage(){
     if(this.currentPage>1){
       this.currentPage--
     }
-		
 		this.showButtons(this.currentPage)
 	},
   drawLine1(){
         // 基于准备好的dom，初始化echarts实例
         this.chart2 = this.$echarts.init(document.getElementById('myChart'))
         // 绘制图表
-        
-        //console.log("绘制饼图时",this.state.easy.length,this.state.images.length,this.state.easynum.length)
         this.chart2.setOption({
           title: {
             text: '                         体型难度占比'
@@ -142,20 +135,13 @@ computed:{
         });
     },
     drawLine2(){
-        // 基于准备好的dom，初始化echarts实例
         this.chart1  = this.$echarts.init(document.getElementById('myChart1'))
-        //console.log("数量",this.state.images.length)
         let arrid=[]
         let arrac=[]
-        //console.log("绘制折线图时",this.state.easy.length,this.state.images.length)
-        
         for(var i=0;i<this.state.images.length;i++){
             arrid.push(this.state.images[i].id)
             arrac.push(this.state.images[i].accept)
         }
-        //console.log("arrid",arrid)
-        
-        // 绘制图表
         this.chart1.setOption({
           title: {
             text: '                        各题通过人数'
@@ -175,15 +161,63 @@ computed:{
           ]
         });
     },
+    handleInputChange(value) {
+      // 执行的函数
+      if(value==''){
+        console.log("搜索框为空")
+        this.state.nowlist=this.state.all
+        this.change(1)
+        return 0
+      }
+      var selectList=value.split('');
+      let arr = JSON.parse(JSON.stringify(this.state.all));
+      console.log('输入框的值变化了：', value,selectList);
+      //console.log("所有题目",this.state.all)
+      for(var i=0;i<arr.length;i++){       
+        arr[i].matchDegree=0 //匹配度
+        for(var k=0;k<selectList.length;k++){
+          // 利用indexOf，记录每个字符在testName中出现的个数，并记录到匹配度
+          var index = arr[i].title.indexOf(selectList[k])
+          while(index!=-1){
+            arr[i].matchDegree++;
+                index=arr[i].title.indexOf(selectList[k],index+1);
+            }
+        }
+      }
+      // 根据匹配度排序
+      arr.sort(function(a, b){return b.matchDegree - a.matchDegree});
+      // 删除匹配度为0的试题、删除matchDegree属性
+      var k=0;
+      while (k<arr.length){
+        // 删除匹配度为0的试题
+          if(arr[k].matchDegree==0){ 
+            arr.splice(k,1);
+              continue;// 直接进入下一个循环
+          }
+          Reflect.deleteProperty(arr[k],'matchDegree'); // 删除matchDegree属性
+          k++;
+      }
+      this.state.nowlist=arr
+      console.log("匹配成功",arr)
+      this.change(1)
+    }
 },
+watch: {
+    inputValue(newValue) {
+      clearTimeout(this.timer);//实现防抖功能
+      this.timer=setTimeout(()=>{
+        this.handleInputChange(newValue);
+      },1200)
+    }
+  },
+ 
 mounted() {
-    // 在组件挂载后执行的操作
     this.showButtons(this.currentPage)
     console.log('组件已挂载！');
     setTimeout(() => {  
       this.drawLine1();
       this.drawLine2()
-    }, 150);
+    }, 200);
     
   },
   beforeDestroy() {
@@ -242,27 +276,20 @@ mounted() {
     };
     const changegrade=() =>{   //切换难度
       if (state.selectedOption === '全部') {
-        // 执行全部选项的逻辑
         state.nowlist=state.all
       } else if (state.selectedOption === '简单') {
-        // 执行简单选项的逻辑
         state.nowlist=state.easy
       } else if (state.selectedOption === '中等') {
-        // 执行中等选项的逻辑
         state.nowlist=state.medium
       }else if (state.selectedOption === '困难') {
-        // 执行困难选项的逻辑
         state.nowlist=state.hard
       }
       state.images=state.nowlist.slice(0,10)
       state.resnum=state.nowlist.length
-      //this.currentPage=1
-      
     };
     
     return { state,change,changegrade};
   },
-
 };
 </script>
 <style>
