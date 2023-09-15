@@ -14,16 +14,22 @@
         <option >中等</option>
         <option >困难</option>
       </select>
-      <br>
+      题数
+      <select v-model="state.shownum" @change="changegrade()">
+        <option   selected>10</option>
+        <option >15</option>
+        <option >20</option>
+      </select>
+      &nbsp;
       <input v-model="inputValue" type="text" placeholder="搜索题目">
     </div>
     <table>
         <thead>
           <tr>
-            <th style="width: 60px;">序号</th>
-            <th style="width: 300px;">题目</th>
-            <th style="width: 60px;">难度</th>
-            <th style="width: 90px;">通过人数</th>
+            <th style="width: 14%;">序号</th>
+            <th style="width: 50%;">题目</th>
+            <th style="width: 14%;">难度</th>
+            <th style="width: 22%;">通过人数</th>
           </tr>
         </thead>
         <tbody>         
@@ -41,14 +47,16 @@
           </tr>
         </tbody>
     </table>
-    <div style="margin-left: 41%;">
-      <span>---{{currentPage}}/{{pagenum}}---</span>
+    <div class="footer-container">
+      <div style="margin-left: 41%;">
+        <span>---{{currentPage}}/{{pagenum}}---</span>
+      </div>
+      <div id="pagination-container">
+        <button class="button" @click="previousPage()">&lt; 上一页</button>
+        <div id="button-list" class="bbb" ref="myDiv"></div>
+        <button class="button" @click="nextPage()">下一页 &gt;</button>
+      </div>
     </div>
-    <div id="pagination-container">
-			<button  class="button" @click="previousPage()">&lt; 上一页</button>
-			<div id="button-list" class="bbb"  ref="myDiv"></div>
-			<button  class="button" @click="nextPage()">下一页 &gt;</button>
-		</div>  
     </div>
 </template>
 <script>
@@ -79,7 +87,7 @@ updated() {
 },
 computed:{
 	maxPages(){
-		return Math.ceil(this.state.nowlist.length/ 10)  //页数，10题一页
+		return Math.ceil(this.state.nowlist.length/ this.state.shownum)  //页数，shownum题一页
 	},
   pagenum(){    //组数，5页为一组
     return Math.ceil(this.maxPages/this.buttonsPerPage)
@@ -240,15 +248,23 @@ mounted() {
       medium:[],
       all:[],
       nowlist:[],//切换后的题目信息
+      shownum:10,//页面展示的题目数量
       selectedOption:'全部',
     });
     onMounted(async () => {
-      let res = await getProblems(1);//初始化页面
+      // 获取窗口高度
+      const windowHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+      console.log(windowHeight)
+      if(windowHeight>850){
+        state.shownum=15
+      }
+      //let res = await getProblems(1);  //初始化页面
       let resnum = await getallProblems();//获得所有题目信息
-      state.images=res.data.data
+      //state.images=res.data.data
       state.all=resnum.data.data
       state.nowlist=state.all
-      console.log("**当前页面题目信息**",state.images)
+      state.images=state.nowlist.slice(0,state.shownum)
+      //console.log("**当前页面题目信息**",state.images)
       state.resnum=resnum.data.data.length
       state.randomquestion=resnum.data.data[Math.floor(Math.random() * state.resnum)]//随机一题作为每日一题
       //console.log("**总题目信息**",resnum.data.data)
@@ -272,7 +288,7 @@ mounted() {
       // state.images=res.data.data     
       // console.log("更新state.images",state.images)
 
-      state.images=state.nowlist.slice(10*(id-1),(10*id))
+      state.images=state.nowlist.slice(state.shownum*(id-1),(state.shownum*id))
     };
     const changegrade=() =>{   //切换难度
       if (state.selectedOption === '全部') {
@@ -284,10 +300,9 @@ mounted() {
       }else if (state.selectedOption === '困难') {
         state.nowlist=state.hard
       }
-      state.images=state.nowlist.slice(0,10)
+      state.images=state.nowlist.slice(0,state.shownum)
       state.resnum=state.nowlist.length
     };
-    
     return { state,change,changegrade};
   },
 };
@@ -296,12 +311,13 @@ mounted() {
   .forumbutton{
 		cursor: pointer;
           padding: 20px;
+          height: 3.5rem;
           background-color: #b3b3b3;
           border: none;
           outline: none;
           border-radius: 5px;
           margin-right: 12px;
-          margin-top: 15px;
+          margin-top: 10px;
 	}
 </style>
 <style lang="less" scoped>
@@ -322,9 +338,10 @@ mounted() {
       }
       table {
         border-collapse: collapse;
+        width: 40%;
         margin: 10px auto;
         font-size: 16px;
-      margin-top:10px;
+      margin-top:5px;
       margin-left: 25%;
       }
       th, td {
@@ -348,13 +365,14 @@ mounted() {
           background-color: #ede2e2;
           border: none;
           outline: none;
+          height: 3.5rem;
           border-radius: 5px;
           margin-right: 5px;
           margin-top: 10px;
         }
     .top{
       margin-left: 24%;
-      margin-top: 10px;
+      margin-top:3px;
       button{
         margin: 10px;
       }
@@ -367,4 +385,5 @@ mounted() {
       float:left;
       margin-top: 10%;
     }
+    
 </style>
